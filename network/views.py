@@ -1,14 +1,16 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import *
 
 
 def index(request):
-    return render(request, "network/index.html")
+    posts = Post.objects.all().order_by("-timestamp")
+    context = {"posts": posts}
+    return render(request, "network/index.html", context)
 
 
 def login_view(request):
@@ -22,7 +24,7 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse("core:index"))
         else:
             return render(request, "network/login.html", {
                 "message": "Invalid username and/or password."
@@ -33,7 +35,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("core:index"))
 
 
 def register(request):
@@ -58,7 +60,16 @@ def register(request):
                 "message": "Username already taken."
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("core:index"))
     else:
         return render(request, "network/register.html")
+
+def createPost(request):
+    if request.method == "POST":
+        text = request.POST.get("post-text")
+        owner = request.user
+        f = Post(text = text, owner = owner )
+        f.save()
+        return HttpResponseRedirect(reverse("core:index"))
+
 

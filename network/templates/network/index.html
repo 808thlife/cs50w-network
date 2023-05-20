@@ -1,5 +1,33 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
+<h1>All posts</h1>
+
+{% if request.user.is_authenticated %}
+<ul class="list-group list-group-flush">
+<li class="list-group-item">
+    <form action="{% url 'core:createPost' %}" method = "POST" >
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="post-text">Create Post</label>
+      <input type="text" class="form-control" name = "post-text" id="post-text" placeholder="text to your post">
+    </div>
+    <button type="submit" class="btn btn-primary">Post</button>
+</form></li>
+
+</ul>
+{% endif %}
+{% for post in posts %}
+<div class="border border-secondary">
+<div class="list-group">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">Posted by: {{post.owner}}</h5>
+      <small class="text-muted">{{post.timestamp}}</small>
+    </div>
+    <p class="mb-1">{{post.text}}</p>
+    <span class = "d-flex"><button type="button" class="btn btn-outline-danger"><i  class="bi bi-balloon-heart">Like</i></button></span>{% if post.owner == request.user %} <a href = "#">Edit</a>{% endif %}
+</div>
+</div>
+{% endfor %}
 
 {% endblock %}
