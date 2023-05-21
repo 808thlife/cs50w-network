@@ -18,10 +18,10 @@
 </ul>
 {% endif %}
 {% for post in posts %}
-<div class="border border-secondary">
+<div class="border border-secondary post">
 <div class="list-group">
     <div class="d-flex w-100 justify-content-between">
-      <h5 class="mb-1">Posted by: {{post.owner}}</h5>
+      <h5 class="mb-1">Posted by: <a href = "{% url 'core:profile' post.owner%}">{{post.owner}}</a></h5>
       <small class="text-muted">{{post.timestamp}}</small>
     </div>
     <p class="mb-1">{{post.text}}</p>

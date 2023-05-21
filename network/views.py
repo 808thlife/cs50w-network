@@ -72,4 +72,5 @@ def createPost(request):
         f.save()
         return HttpResponseRedirect(reverse("core:index"))
 
-
+def profile(request, name):
+    return render(request, "network/profile.html")
