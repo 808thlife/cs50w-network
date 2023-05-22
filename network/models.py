@@ -3,7 +3,10 @@ from django.db import models
 
 
 class User(AbstractUser):
-    pass
+    following = models.ManyToManyField(
+    "self", blank=True, related_name="followers", symmetrical=False
+    )
+
 
 class Post(models.Model):
     owner = models.ForeignKey(User, related_name = "owner", on_delete=models.CASCADE)
@@ -16,10 +19,3 @@ class Like(models.Model):
     post = models.ForeignKey(Post, related_name = "liked", on_delete = models.CASCADE)
     owner = models.ForeignKey(User, related_name = "liker",  on_delete = models.CASCADE)
 
-class Following(models.Model):
-    follower = models.OneToOneField(User, related_name = "follower", on_delete=models.CASCADE)
-    following = models.ManyToManyField(User, related_name = "following", )
-
-
-    def __str__(self):
-        return f"{self.folloewer} following {self.following}"

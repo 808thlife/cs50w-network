@@ -1,6 +1,35 @@
 {% extends 'network/layout.html' %}
+{% load static %}
+
 
 {% block body %}
+<div>
+    <h2>Profile of {{profile.username}}</h2>
+    <div class ="main-profile">
+        <div class = "info">
+            <p>
+                <img class = "round-photo"src="{% static 'network/img/41e8311543aba9491257f4d6f455322d.jpeg' %}" alt="" rounded-corners >
+                <div class = "form-group">
+                    <div>
+                        <ul class="list-group">
+                        <li class="list-group-item active" aria-current="true">More info</li>
+                        <li class="list-group-item">Name: {{profile.username}}</li>
+                        <li class="list-group-item">Followers: {{profile.following.count}}</li>
+                        <li class="list-group-item">Following: {{profile.followers.count}}</li>
+                        {% if request.user.is_authenticated %}
+                            <div class ="form-group">
+                                <button class ="btn btn-success">Follow</button>
+                            </div>
+                        {% endif %}
+                      </ul>
+                    </div>
+                </div>
+            </p>
+        </div>
 
+    </div>
+
+
+</div>
 {% endblock body %}
 

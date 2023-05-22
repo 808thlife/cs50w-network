@@ -73,4 +73,6 @@ def createPost(request):
         return HttpResponseRedirect(reverse("core:index"))
 
 def profile(request, name):
-    return render(request, "network/profile.html")
+    user = User.objects.get(username = name)
+    context = {"profile": user}
+    return render(request, "network/profile.html", context)

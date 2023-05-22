@@ -16,3 +16,14 @@ small {
 .list-group{
     padding: 10px;
 }
+
+.round-photo{
+    margin-left:100px;
+    width: 200px;
+    height: 200px;
+    border-radius:75%;
+}
+
+button{
+    margin-top:15px;
+}
