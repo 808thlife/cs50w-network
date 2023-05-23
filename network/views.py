@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from .models import *
 
+import json
 
 def index(request):
     posts = Post.objects.all().order_by("-timestamp")
@@ -75,4 +76,10 @@ def createPost(request):
 def profile(request, name):
     user = User.objects.get(username = name)
     context = {"profile": user}
-    return render(request, "network/profile.html", context)
+    return render(request,"network/profile.html", context)
+
+def follow(request, name):
+    user = User.objects.filter(username = name).values()
+    if request.method == "PUT":
+        return JsonResponse(user, safe = False)
+        

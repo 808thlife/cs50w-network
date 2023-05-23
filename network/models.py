@@ -7,6 +7,10 @@ class User(AbstractUser):
     "self", blank=True, related_name="followers", symmetrical=False
     )
 
+    liked = models.ManyToManyField(
+    "self", blank = True, related_name = "likedback", symmetrical = False
+    )
+
 
 class Post(models.Model):
     owner = models.ForeignKey(User, related_name = "owner", on_delete=models.CASCADE)
@@ -14,8 +18,3 @@ class Post(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"post by {self.owner}"
-
-class Like(models.Model):
-    post = models.ForeignKey(Post, related_name = "liked", on_delete = models.CASCADE)
-    owner = models.ForeignKey(User, related_name = "liker",  on_delete = models.CASCADE)
-

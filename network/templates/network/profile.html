@@ -13,12 +13,12 @@
                     <div>
                         <ul class="list-group">
                         <li class="list-group-item active" aria-current="true">More info</li>
-                        <li class="list-group-item">Name: {{profile.username}}</li>
+                        <li class="list-group-item" id = "profile_username">Name: {{profile.username}}</li>
                         <li class="list-group-item">Followers: {{profile.following.count}}</li>
                         <li class="list-group-item">Following: {{profile.followers.count}}</li>
                         {% if request.user.is_authenticated %}
                             <div class ="form-group">
-                                <button class ="btn btn-success">Follow</button>
+                                <button class ="btn btn-success" id = "follow">Follow</button>
                             </div>
                         {% endif %}
                       </ul>
