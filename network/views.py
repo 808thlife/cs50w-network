@@ -75,7 +75,9 @@ def createPost(request):
 
 def profile(request, name):
     user = User.objects.get(username = name)
-    context = {"profile": user}
+    currentUser = request.user
+    isFollowed = user in currentUser.following.all()
+    context = {"profile": user, "isFollowed":isFollowed, "name":user.username}
     return render(request,"network/profile.html", context)
 
 def follow(request, name):
@@ -83,3 +85,28 @@ def follow(request, name):
     if request.method == "PUT":
         return JsonResponse(user, safe = False)
         
+def api_current_user(request):
+    user = list(User.objects.filter(pk=request.user.pk).values(
+        "username"
+    ))
+    return JsonResponse(user, safe = False)
+
+def follow(request, username):
+    user = User.objects.get(username = username)
+    currentUser = request.user
+    user.following.add(currentUser)
+    return HttpResponseRedirect(reverse(f"core:profile", kwargs = {"name": user}))
+
+def unfollow(request, username):
+    user = User.objects.get(username = username)
+    currentUser = request.user
+    user.following.remove(currentUser)
+    return HttpResponseRedirect(reverse(f"core:profile", kwargs = {"name": user}))
+
+def following(request):
+    currentUser = request.user
+    following = currentUser.following.all()
+    posts= Post.objects.filter(owner__in= following).order_by('-timestamp') # showing followed user's posts
+    context = {"posts":posts}
+    return render(request, "network/following.html", context)
+
