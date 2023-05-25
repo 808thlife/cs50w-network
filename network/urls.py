@@ -16,6 +16,7 @@ urlpatterns = [
     path("unfollow/<str:username>", views.unfollow, name ="unfollow"),
     path("follow/<str:name>", views.follow, name = "followapi"),
     path("currentuser", views.api_current_user, name = "currentUser"),
-    path("following", views.following, name = "following")
+    path("following", views.following, name = "following"),
+    path("edit/<int:post_id>", views.editPost, name ="edit")
 
 ]

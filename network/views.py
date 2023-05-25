@@ -1,16 +1,19 @@
-from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-
+from django.contrib.auth import authenticate, login, logout
+from django.core.paginator import Paginator
 from .models import *
 
 import json
 
 def index(request):
     posts = Post.objects.all().order_by("-timestamp")
-    context = {"posts": posts}
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    context = {"posts": page_obj}
     return render(request, "network/index.html", context)
 
 
@@ -110,3 +113,11 @@ def following(request):
     context = {"posts":posts}
     return render(request, "network/following.html", context)
 
+def editPost(request, post_id):
+    if request.method == "POST":
+        post = Post.objects.filter(id = post_id)
+
+        return JsonResponse
+
+def Like(request, post_id):
+    pass
