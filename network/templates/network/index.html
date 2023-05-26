@@ -24,7 +24,7 @@
         <h5 class="mb-1">Posted by: <a href = "{% url 'core:profile' post.owner%}">{{post.owner}}</a></h5>
         <small class="text-muted">{{post.timestamp}}</small>
       </div>
-      <p class="mb-1">{{post.text}}</p>
+      <p class="mb-1" id = "post-text">{{post.text}}</p>
     <span class = "d-flex"><button type="button" class="btn btn-outline-danger"><i  class="bi bi-balloon-heart">Like</i></button></span>
     {% if request.user == post.owner %}
     <span class = "d-flex"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id = "edit">
@@ -45,7 +45,7 @@
       <div class="modal-body">
         <div class="form-group">
           <label for="exampleFormControlTextarea1">Edit your post:</label>
-          <textarea class="form-control" id = "post-text" id="exampleFormControlTextarea1" rows="3"></textarea>
+          <textarea class="form-control" id = "edit-post" id="exampleFormControlTextarea1" rows="3"></textarea>
         </div>
       </div>
       <div class="modal-footer">
@@ -66,13 +66,18 @@
     <li class="page-item"><a href="?page={{ posts.next_page_number }}" class = "page-link">next</a></li>
     {% endif %}
   </ul>
-  <script>
+  {% comment %} <script>
 
     const button = document.querySelector("#edit");
 
     button.addEventListener('click', function(event){
-        console.log(1)
-       let post = event.target.parentElement.closest('div'); 
+        let post = event.target.parentElement.closest('div'); 
+        fetch(`edit/${post.id}`, {
+          method: 'POST',
+          body: JSON.stringify({
+            ///
+          })
+        });
     });
-  </script>
+  </script> {% endcomment %}
 {% endblock %}

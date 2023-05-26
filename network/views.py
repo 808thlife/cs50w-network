@@ -4,6 +4,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator
+from django.views.decorators.csrf import csrf_exempt
+
 from .models import *
 
 import json
@@ -113,11 +115,14 @@ def following(request):
     context = {"posts":posts}
     return render(request, "network/following.html", context)
 
+@csrf_exempt
 def editPost(request, post_id):
+    data = json.loads(request.body)
     if request.method == "POST":
-        post = Post.objects.filter(id = post_id)
-
-        return JsonResponse
+        print(data)
+        editedText = data.get("editedText", "")
+        post = list(Post.objects.filter(id = post_id).values("text", "owner"))
+        return JsonResponse(post,safe = False)
 
 def Like(request, post_id):
     pass
