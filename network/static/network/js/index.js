@@ -1,36 +1,26 @@
 const buttons = document.querySelectorAll("#edit");
     buttons.forEach(button =>{
-
         button.addEventListener('click', function(event){
+
             let post = event.target.parentElement.closest('div');
-            console.log(post.closest("p"));
-            document.querySelector("textarea").value = post.closest("p");
+            text = post.children[1].innerHTML;
+            document.querySelector(".edit-post-form").innerHTML = `
+            <label for="exampleFormControlTextarea1">Edit your post:</label>
+            <textarea class="form-control" id="edit-post" rows="3">${text}</textarea>     
+            `;
+            const submitButton = document.querySelector("#save");
+            submitButton.addEventListener('click', ()=>{
+            editedText = document.querySelector("textarea").value;
+            post.children[1].innerHTML = "edited";
+            console.log(editedText);
             fetch(`edit/${post.id}`, {
                 method: 'POST',
                 body: JSON.stringify({
-                    editedText : document.querySelector("textarea").value
+                    editedText : editedText
                 })
               })
-              .then(response => response.json())
-              .then(result => {
-                  // Print result
-                  console.log(result);
-              })
         });
-
-    })
-    
-
-
-
-function load_page(page){
-
-}
-
-
-function getUser(){
-    fetch("currentuser")
-    .then(response => response.json)
-}
+    });
+})
 // will do somehing with it later when ill be able to write APIS SPA
 
