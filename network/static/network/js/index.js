@@ -11,7 +11,7 @@ const buttons = document.querySelectorAll("#edit");
             const submitButton = document.querySelector("#save");
             submitButton.addEventListener('click', ()=>{
             editedText = document.querySelector("textarea").value;
-            post.children[1].innerHTML = "edited";
+            post.children[1].innerHTML = editedText;
             console.log(editedText);
             fetch(`edit/${post.id}`, {
                 method: 'POST',
