@@ -25,7 +25,7 @@
         <small class="text-muted">{{post.timestamp}}</small>
       </div>
       <p class="mb-1" id = "post-text">{{post.text}}</p>
-    <span class = "d-flex"><button type="button" class="btn btn-outline-danger"><i  class="bi bi-balloon-heart">Like</i></button></span>
+    <span class = "d-flex"><button type="button" class="btn btn-outline-danger" id ="like"><i  class="bi bi-balloon-heart">Like</i></button></span>
     {% if request.user == post.owner %}
     <span class = "d-flex"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id = "edit">
       Edit

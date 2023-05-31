@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.core import serializers
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -118,14 +119,21 @@ def following(request):
 @csrf_exempt
 def editPost(request, post_id):
     response = {}
+    post = Post.objects.filter(id = post_id)
     data = request.body.decode('utf-8')
     json_data = json.loads(data)
-    if request.method == "POST":
+    if request.method =="POST":
         editedText = json_data.get("editedText", "")
-        response["editedText"] =  editedText
-        post = Post.objects.filter(id = post_id)
         post.update(text=  editedText)
-    return JsonResponse(response)
+        return JsonResponse(json.dumps(post), safe = False)
+    else:
+        return JsonResponse({"error":"400"}, status = 400)
 
-def Like(request, post_id):
-    pass
+@csrf_exempt
+def like(request, post_id):
+    post = Post.objects.filter(id = post_id)
+    user = Like.objects.filter(liker= request.user, liked = post)
+    serialized_post = serializers.serialize("json", user)
+    if request.method == "PUT":
+        return JsonResponse(serialized_post, safe = False)
+    return JsonResponse(serialized_post, safe = False)
