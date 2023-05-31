@@ -117,14 +117,15 @@ def following(request):
 
 @csrf_exempt
 def editPost(request, post_id):
+    response = {}
     data = request.body.decode('utf-8')
     json_data = json.loads(data)
-    #if request.method == "POST":
-    editedText = json_data.get("editedText", "")
-    print(editedText)
-    post = Post.objects.filter(id = post_id)
-    post.update(text=  editedText)
-    return HttpResponse(json_data, content_type ="application/json")
+    if request.method == "POST":
+        editedText = json_data.get("editedText", "")
+        response["editedText"] =  editedText
+        post = Post.objects.filter(id = post_id)
+        post.update(text=  editedText)
+    return JsonResponse(response)
 
 def Like(request, post_id):
     pass
