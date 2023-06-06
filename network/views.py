@@ -1,15 +1,22 @@
-from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
+from django.core import serializers
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth import authenticate, login, logout
+from django.core.paginator import Paginator
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import *
 
+import json
 
 def index(request):
     posts = Post.objects.all().order_by("-timestamp")
-    context = {"posts": posts}
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    context = {"posts": page_obj}
     return render(request, "network/index.html", context)
 
 
@@ -74,5 +81,61 @@ def createPost(request):
 
 def profile(request, name):
     user = User.objects.get(username = name)
-    context = {"profile": user}
-    return render(request, "network/profile.html", context)
+    currentUser = request.user
+    isFollowed = user in currentUser.following.all()
+    context = {"profile": user, "isFollowed":isFollowed, "name":user.username}
+    return render(request,"network/profile.html", context)
+
+def follow(request, name):
+    user = User.objects.filter(username = name).values()
+    if request.method == "PUT":
+        return JsonResponse(user, safe = False)
+        
+def api_current_user(request):
+    user = list(User.objects.filter(pk=request.user.pk).values(
+        "username"
+    ))
+    return JsonResponse(user, safe = False)
+
+def follow(request, username):
+    user = User.objects.get(username = username)
+    currentUser = request.user
+    user.following.add(currentUser)
+    return HttpResponseRedirect(reverse(f"core:profile", kwargs = {"name": user}))
+
+def unfollow(request, username):
+    user = User.objects.get(username = username)
+    currentUser = request.user
+    user.following.remove(currentUser)
+    return HttpResponseRedirect(reverse(f"core:profile", kwargs = {"name": user}))
+
+def following(request):
+    currentUser = request.user
+    following = currentUser.following.all()
+    posts= Post.objects.filter(owner__in= following).order_by('-timestamp') # showing followed user's posts
+    context = {"posts":posts}
+    return render(request, "network/following.html", context)
+
+@csrf_exempt
+def editPost(request, post_id):
+    post = Post.objects.filter(id = post_id)
+    data = request.body.decode('utf-8')
+    json_data = json.loads(data)
+    if request.method =="POST":
+        editedText = json_data.get("editedText", "")
+        post.update(text=  editedText)
+        return JsonResponse({"status":"edited successfully"})
+    else:
+        return JsonResponse({"error":"400"}, status = 400)
+
+@csrf_exempt
+def like(request, post_id):
+    data = request.body.decode('utf-8')
+    # it takes request.user and relevant post and creates new Like model( user = request.user, post = post)
+    post = Post.objects.filter(id = post_id)
+    user = request.user
+    if request.method == "PUT":
+        if Like.objects.filter(liked__id = post_id).exists():
+            return JsonResponse({"liked":True})
+        return JsonResponse({"liked": False})
+    return JsonResponse({"like":True})

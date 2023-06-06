@@ -13,13 +13,26 @@
                     <div>
                         <ul class="list-group">
                         <li class="list-group-item active" aria-current="true">More info</li>
-                        <li class="list-group-item">Name: {{profile.username}}</li>
+                        <li class="list-group-item" id = "profile_username">Name: {{profile.username}}</li>
                         <li class="list-group-item">Followers: {{profile.following.count}}</li>
                         <li class="list-group-item">Following: {{profile.followers.count}}</li>
                         {% if request.user.is_authenticated %}
+                            {% if isFollowed %}
                             <div class ="form-group">
-                                <button class ="btn btn-success">Follow</button>
+                                <form action="{% url 'core:unfollow' profile.username%}"  method = "POST">
+                                    {% csrf_token %}
+                                    <button class ="btn btn-danger" id = "follow">Unfollow</button>
+                                </form>
                             </div>
+                            {% else %}
+                            <div class ="form-group">
+                                <form action="{% url 'core:follow' profile.username%}" method = "POST">
+                                    {% csrf_token %}
+                                    <button class ="btn btn-success" id = "follow">Follow</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                            
                         {% endif %}
                       </ul>
                     </div>
@@ -31,5 +44,10 @@
 
 
 </div>
+<script>
+
+    
+
+</script>
 {% endblock body %}
 

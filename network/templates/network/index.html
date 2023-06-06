@@ -19,15 +19,64 @@
 {% endif %}
 {% for post in posts %}
 <div class="border border-secondary post">
-<div class="list-group">
-    <div class="d-flex w-100 justify-content-between">
-      <h5 class="mb-1">Posted by: <a href = "{% url 'core:profile' post.owner%}">{{post.owner}}</a></h5>
-      <small class="text-muted">{{post.timestamp}}</small>
+  <div class="list-group" id = "{{post.id}}">
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1">Posted by: <a href = "{% url 'core:profile' post.owner%}">{{post.owner}}</a></h5>
+        <small class="text-muted">{{post.timestamp}}</small>
+      </div>
+      <p class="mb-1" id = "post-text">{{post.text}}</p>
+    <span class = "d-flex"><button type="button" class="btn btn-outline-danger" id ="like"><i  class="bi bi-balloon-heart">Like</i></button></span>
+    {% if request.user == post.owner %}
+    <span class = "d-flex"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id = "edit">
+      Edit
+      </button></span>
+    {% endif %}
     </div>
-    <p class="mb-1">{{post.text}}</p>
-    <span class = "d-flex"><button type="button" class="btn btn-outline-danger"><i  class="bi bi-balloon-heart">Like</i></button></span>{% if post.owner == request.user %} <a href = "#">Edit</a>{% endif %}
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group edit-post-form">
+  
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id = "close">Close</button>
+        <button type="submit" class="btn btn-primary " id = "save">Save changes</button>
+      </div>
+    </div>
+  </div>
 </div>
 </div>
 {% endfor %}
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
+    {% if posts.has_previous %}
+    <li class="page-item"><a class ="page-link" href="?page={{ posts.previous_page_number }}">previous</a></li>
+    {% endif %}
+    {% if posts.has_next %}
+    <li class="page-item"><a href="?page={{ posts.next_page_number }}" class = "page-link">next</a></li>
+    {% endif %}
+  </ul>
+  {% comment %} <script>
 
+    const button = document.querySelector("#edit");
+
+    button.addEventListener('click', function(event){
+        let post = event.target.parentElement.closest('div'); 
+        fetch(`edit/${post.id}`, {
+          method: 'POST',
+          body: JSON.stringify({
+            ///
+          })
+        });
+    });
+  </script> {% endcomment %}
 {% endblock %}
