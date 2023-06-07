@@ -106,7 +106,7 @@ def follow(request, username):
 def unfollow(request, username):
     user = User.objects.get(username = username)
     currentUser = request.user
-    user.following.remove(currentUser)
+    currentUser.following.remove(user)
     return HttpResponseRedirect(reverse(f"core:profile", kwargs = {"name": user}))
 
 def following(request):
@@ -136,6 +136,11 @@ def like(request, post_id):
     user = request.user
     if request.method == "PUT":
         if Like.objects.filter(liked__id = post_id).exists():
-            return JsonResponse({"liked":True})
-        return JsonResponse({"liked": False})
-    return JsonResponse({"like":True})
+            f = Like.objects.filter(liked__id = post_id)
+            f.delete()
+            return JsonResponse({"status":"Successfully removed the like!"})
+        else:
+            f = Like(liker = user ,liked = Post.objects.get(id = post_id))
+            f.save()
+            return JsonResponse({"status": "Successfully liked!"})
+    return JsonResponse({"error":"wrong method! Should be PUT"})

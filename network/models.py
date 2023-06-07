@@ -22,5 +22,8 @@ class Like(models.Model):
         return f"{self.liker} liked {self.liked}"
 
 class Following(models.Model):
-    following = models.ForeignKey(User, related_name = "fwing", on_delete=models.CASCADE)
-    followers = models.ForeignKey(User, related_name = "fwers", on_delete=models.CASCADE)
+    follower = models.ForeignKey(User, related_name = "fllwer", on_delete= models.CASCADE)
+    following = models.ManyToManyField(User, related_name = "followed")
+
+    def __str__(self):
+        return f"{self.follower} followings"

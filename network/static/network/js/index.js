@@ -1,7 +1,15 @@
 document.addEventListener("DOMContentLoaded", ()=>{
     Like();
     Edit();
+    ProfileChecker();
 })
+
+function ProfileChecker(){
+    if(document.querySelector("#username").innerHTML === document.querySelector("profile_username")){
+        document.querySelector("#follow").className = "btn btn-danger disabled";
+    }
+
+}
 
 function Edit(){
     const buttons = document.querySelectorAll("#edit");
@@ -44,13 +52,14 @@ likeButtons.forEach(button =>{
         fetch(`like/${post.id}`, {
             method: "PUT",
             body: JSON.stringify({
+                //liked:
             })
         })
-        .then(response =>{
-            console.log(response.json())
+        .then(response => response.json())
+        .then(function(result){ 
+            console.log(result)
         })
-        .then(liked => console.log(liked))
-        
+        .then(console.log(liked))
     })
 })
 
