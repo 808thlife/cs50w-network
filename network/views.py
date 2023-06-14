@@ -15,12 +15,10 @@ def index(request):
     currentUser = request.user
     if Like.objects.filter(liker= currentUser).exists():    
         likedList = Like.objects.get(liker = currentUser)
-        likedList = likedList.liked
+        likedList = likedList.liked.all()
     else:
         f= Like(liker = currentUser)
         f.save()
-        likedList = Like.objects.get(liker = currentUser)
-        likedList = likedList.liked
     posts = Post.objects.all().order_by("-timestamp")
     paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
@@ -157,18 +155,20 @@ def editPost(request, post_id):
 
 @csrf_exempt
 def like(request, post_id):
+    if not Like.objects.filter(liker = request.user).exists():
+        f = Like(liker = user)
+        f.save()
     data = request.body.decode('utf-8')
     # it takes request.user and relevant post and creates new Like model( user = request.user, post = post)
     post = Post.objects.get(id = post_id)
     user = request.user
+    user_likes = Like.objects.get(liker = user)
     if request.method == "POST":
-        if Like.objects.filter(liker = user).exists():
+        if Like.objects.filter(liker = user).exists() and post in user_likes.liked.all():
             like = Like.objects.get(liker = user)
             like.liked.remove(post)
             return JsonResponse({"like":False})
-        else:
-            f = Like(liker = user)
-            f.save()
+        elif not post in user_likes.liked.all():
             like = Like.objects.get(liker = user)
             like.liked.add(post)
             return JsonResponse({"like":True})
