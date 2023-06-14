@@ -19,7 +19,7 @@ class Like(models.Model):
     liked = models.ManyToManyField(Post, related_name = "liked")
 
     def __str__(self):
-        return f"{self.liker} liked {self.liked}"
+        return f"{self.liker} likes"
 
 class Following(models.Model):
     follower = models.ForeignKey(User, related_name = "fllwer", on_delete= models.CASCADE)

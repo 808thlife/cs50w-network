@@ -159,15 +159,17 @@ def editPost(request, post_id):
 def like(request, post_id):
     data = request.body.decode('utf-8')
     # it takes request.user and relevant post and creates new Like model( user = request.user, post = post)
-    post = Post.objects.filter(id = post_id)
+    post = Post.objects.get(id = post_id)
     user = request.user
-    if request.method == "PUT":
-        if Like.objects.filter(liked__id = post_id).exists():
-            f = Like.objects.filter(liked__id = post_id)
-            f.delete()
+    if request.method == "POST":
+        if Like.objects.filter(liker = user).exists():
+            like = Like.objects.get(liker = user)
+            like.liked.remove(post)
             return JsonResponse({"like":False})
         else:
-            f = Like(liker = user ,liked = Post.objects.get(id = post_id))
+            f = Like(liker = user)
             f.save()
+            like = Like.objects.get(liker = user)
+            like.liked.add(post)
             return JsonResponse({"like":True})
     return JsonResponse({"error":"wrong method! Should be PUT"})

@@ -50,7 +50,7 @@ likeButtons.forEach(button =>{
     button.addEventListener('click', function(event){
         let post = event.target.parentElement.closest('div');
         fetch(`like/${post.id}`, {
-            method: "PUT",
+            method: "POST",
             body: JSON.stringify({
                 //liked:
             })
