@@ -57,9 +57,18 @@ likeButtons.forEach(button =>{
         })
         .then(response => response.json())
         .then(function(result){ 
-            console.log(result)
+            result = JSON.stringify(result)
+            liked = JSON.parse(result).like
+
+            if(liked === true){
+                btn = event.target
+                btn.innerHTML = "Unlike"
+            }
+            if(liked === false){
+                btn = event.target
+                btn.innerHTML = "Like"
+            }
         })
-        .then(console.log(liked))
     })
 })
 

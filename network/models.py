@@ -16,7 +16,7 @@ class Post(models.Model):
 
 class Like(models.Model):
     liker = models.ForeignKey(User, related_name = "liker", on_delete = models.CASCADE)
-    liked = models.ForeignKey(Post, related_name = "liked", on_delete = models.CASCADE)
+    liked = models.ManyToManyField(Post, related_name = "liked")
 
     def __str__(self):
         return f"{self.liker} liked {self.liked}"

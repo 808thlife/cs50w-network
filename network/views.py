@@ -3,7 +3,7 @@ from django.core import serializers
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib.auth import authenticate, login, logout
+from django.contrib. auth import authenticate, login, logout
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
 
@@ -12,11 +12,20 @@ from .models import *
 import json
 
 def index(request):
+    currentUser = request.user
+    if Like.objects.filter(liker= currentUser).exists():    
+        likedList = Like.objects.get(liker = currentUser)
+        likedList = likedList.liked
+    else:
+        f= Like(liker = currentUser)
+        f.save()
+        likedList = Like.objects.get(liker = currentUser)
+        likedList = likedList.liked
     posts = Post.objects.all().order_by("-timestamp")
     paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    context = {"posts": page_obj}
+    context = {"posts": page_obj, "likes":likedList}
     return render(request, "network/index.html", context)
 
 
@@ -82,8 +91,13 @@ def createPost(request):
 def profile(request, name):
     user = User.objects.get(username = name)
     currentUser = request.user
-    isFollowed = user in currentUser.following.all()
-    context = {"profile": user, "isFollowed":isFollowed, "name":user.username}
+    if Following.objects.filter(follower = user).exists():
+        followings = Following.objects.get(follower = currentUser)
+        isFollowed = user in followings.following.all()
+    else: 
+        f = Following(follower = currentUser)
+        f.save()
+    context = {"profile": user, "isFollowed":isFollowed, "name":user.username, "following":Following.objects.filter(follower = user)}
     return render(request,"network/profile.html", context)
 
 def follow(request, name):
@@ -98,22 +112,35 @@ def api_current_user(request):
     return JsonResponse(user, safe = False)
 
 def follow(request, username):
-    user = User.objects.get(username = username)
-    currentUser = request.user
-    user.following.add(currentUser)
-    return HttpResponseRedirect(reverse(f"core:profile", kwargs = {"name": user}))
+    prof = User.objects.get(username = username)
+    if request.method == "POST":
+        if Following.objects.filter(follower = request.user).exists():
+            user = Following.objects.get(follower = request.user)
+            user.following.add(User.objects.get(username = username))
+        else:
+            f = Following(follower = request.user)
+            f.save()
+        return HttpResponseRedirect(reverse(f"core:profile", kwargs = {"name": prof.username}))    
+    else:
+        return HttpResponse("error")
 
 def unfollow(request, username):
-    user = User.objects.get(username = username)
-    currentUser = request.user
-    currentUser.following.remove(user)
-    return HttpResponseRedirect(reverse(f"core:profile", kwargs = {"name": user}))
+    prof = User.objects.get(username = username)
+    if request.method == "POST":
+        if Following.objects.filter(follower = request.user).exists():
+            user = Following.objects.get(follower = request.user)
+            user.following.remove(User.objects.get(username = username))
+        else:
+            f = Following(follower = request.user)
+            f.save()
+        return HttpResponseRedirect(reverse(f"core:profile", kwargs = {"name": prof.username}))    
+    else:
+        return HttpResponse("error")
 
 def following(request):
-    currentUser = request.user
-    following = currentUser.following.all()
-    posts= Post.objects.filter(owner__in= following).order_by('-timestamp') # showing followed user's posts
-    context = {"posts":posts}
+    user = Following.objects.get(follower = request.user)
+    posts= Post.objects.filter(owner__in=user.following).order_by('-timestamp') # showing followed user's posts
+    context = {"posts":posts,"following":user}
     return render(request, "network/following.html", context)
 
 @csrf_exempt
@@ -138,9 +165,9 @@ def like(request, post_id):
         if Like.objects.filter(liked__id = post_id).exists():
             f = Like.objects.filter(liked__id = post_id)
             f.delete()
-            return JsonResponse({"status":"Successfully removed the like!"})
+            return JsonResponse({"like":False})
         else:
             f = Like(liker = user ,liked = Post.objects.get(id = post_id))
             f.save()
-            return JsonResponse({"status": "Successfully liked!"})
+            return JsonResponse({"like":True})
     return JsonResponse({"error":"wrong method! Should be PUT"})

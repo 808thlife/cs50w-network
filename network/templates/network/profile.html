@@ -14,8 +14,8 @@
                         <ul class="list-group">
                         <li class="list-group-item active" aria-current="true">More info</li>
                         <li class="list-group-item" id = "profile_username">Name: {{profile.username}}</li>
-                        <li class="list-group-item">Followers: {{profile.following.count}}</li>
-                        <li class="list-group-item">Following: {{profile.followers.count}}</li>
+                        <li class="list-group-item">Followers: {{following.following.count}}</li>
+                        <li class="list-group-item">Following: {{following.following.count}}</li>
                         {% if request.user.is_authenticated %}
                             {% if isFollowed %}
                             <div class ="form-group">
