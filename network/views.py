@@ -13,17 +13,18 @@ import json
 
 def index(request):
     currentUser = request.user
-    if Like.objects.filter(liker= currentUser).exists():    
-        likedList = Like.objects.get(liker = currentUser)
-        likedList = likedList.liked.all()
-    else:
+    
+    if not Like.objects.filter(liker= currentUser).exists():    
         f= Like(liker = currentUser)
         f.save()
+    likedList = Like.objects.get(liker = currentUser)
+    likedList = likedList.liked.all()
+
     posts = Post.objects.all().order_by("-timestamp")
     paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    context = {"posts": page_obj, "likes":likedList}
+    context = {"posts": page_obj, "likes":likedList, }
     return render(request, "network/index.html", context)
 
 
