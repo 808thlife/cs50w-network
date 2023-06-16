@@ -11,10 +11,12 @@
                 <img class = "round-photo"src="{% static 'network/img/41e8311543aba9491257f4d6f455322d.jpeg' %}" alt="" rounded-corners >
                 <div class = "form-group">
                     <div>
+                        {{following.follower.count}}
+                        
                         <ul class="list-group">
                         <li class="list-group-item active" aria-current="true">More info</li>
                         <li class="list-group-item" id = "profile_username">Name: {{profile.username}}</li>
-                        <li class="list-group-item">Followers: {{following.following.count}}</li>
+                        <li class="list-group-item">Followers: {{profile.followed.count}}</li>
                         <li class="list-group-item">Following: {{following.following.count}}</li>
                         {% if request.user.is_authenticated %}
                             {% if isFollowed %}

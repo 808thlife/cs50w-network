@@ -13,7 +13,7 @@ import json
 
 def index(request):
     currentUser = request.user
-    
+
     if not Like.objects.filter(liker= currentUser).exists():    
         f= Like(liker = currentUser)
         f.save()
@@ -89,14 +89,18 @@ def createPost(request):
 
 def profile(request, name):
     user = User.objects.get(username = name)
+
     currentUser = request.user
-    if Following.objects.filter(follower = user).exists():
-        followings = Following.objects.get(follower = currentUser)
-        isFollowed = user in followings.following.all()
-    else: 
+
+    if not Following.objects.filter(follower = user).exists():
         f = Following(follower = currentUser)
         f.save()
-    context = {"profile": user, "isFollowed":isFollowed, "name":user.username, "following":Following.objects.filter(follower = user)}
+
+    followings = Following.objects.get(follower = currentUser)
+    just = Following.objects.get(follower = user)
+    print(user.followed.all())
+    isFollowed = user in followings.following.all()
+    context = {"profile": user, "isFollowed":isFollowed, "name":user.username, "following": Following.objects.get(follower = user)}
     return render(request,"network/profile.html", context)
 
 def follow(request, name):
